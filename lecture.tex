@@ -21,6 +21,8 @@
 %\usepackage{enumitem}
 \usepackage{tikz}
 \usepackage{minted}
+\setminted{fontsize=\footnotesize, linenos, frame=lines}
+%\usemintedstyle{monokai}
 %\usepackage{circuitikz}
 %\setCJKmainfont[BoldFont=cwTex Q Hei]{cwTex Q Ming}
 %\setCJKsansfont[BoldFont=cwTex Q Hei]{cwTex Q Ming}
@@ -248,16 +250,43 @@
   \end{figure}
 \end{frame}
 
-\begin{frame}[t]{\secname \ -- 數學想法例子}
+\begin{frame}[t, fragile]{\secname \ -- 數學想法例子}
   \begin{enumerate}
     \setcounter{enumi}{3}
     \item 寫 code
-
-      \begin{minted}{cpp}
-
-        123123
-      \end{minted}
   \end{enumerate}
+
+  \begin{minted}{cpp}
+sort(begin(a), end(a));
+int ans = 0;
+for (int i=0; i<n-2; i++)
+  ans = max(ans, a[i+2] - a[i]);
+cout << ans << endl;
+  \end{minted}
+  \pause
+
+  \bigskip
+  Very easy! --- 有時漂亮的結論就會有很短的程式碼。
+\end{frame}
+
+\begin{frame}{\secname}
+  相同的題目就不會在出現第二次了。
+  \pause
+
+  \bigskip
+  \alert{但用類似想法的題目有可能會在出現！}
+
+  \pause
+  \smallskip
+  要有舉一反三的能力！
+\end{frame}
+
+\begin{frame}[t]
+  \begin{problem}[2016 NTU PK pF]
+    給你一堆數列 $a_1, a_2, \cdots, a_n$，你要找一個排列 $\sigma$，使得
+    \[ \min_{1 \leq i < n} \abs{a_{\sigma(i)} - a_{\sigma(i+1)}} \]
+    最大。 ($n \leq 2 \times 10^5$)
+  \end{problem}
 \end{frame}
 
 \section{234}
