@@ -439,8 +439,8 @@ int fastpow(int a, int b, int m) {
 \end{frame}
 
 \begin{frame}{\secname \ -- 群}
-\begin{definition}[群] 一個\emph{群}由一個集合 $G$ 和一個運算 $\cdot$ 構成，滿足
-  \begin{itemize}
+\begin{definition}[群] 一個\emph{群}由一個集合 $G$ 和一個運算 $\cdot$ 構成，滿足\pause
+  \begin{itemize}[<+->]
     \item 運算 $\cdot$ 是一個函數 $(G, G) \to G$，也就是說 $x \cdot y \in G$。
     \item 有\emph{結合律}：$(x \cdot y) \cdot z = x \cdot (y \cdot z)$
     \item 存在一個特別的元素 $1$ 叫作\emph{單位元}，滿足 $1 \cdot x = x \cdot 1 = x$。
@@ -523,7 +523,29 @@ pair<int, int> extend_gcd(int a, int b) {
     \[ \varphi(n)
       = n \left( 1 - \frac1{p_1} \right) \left( 1 - \frac1{p_2} \right) \cdots \left( 1 - \frac1{p_k} \right)\]
   \end{theorem}
+\end{frame}
 
+\begin{frame}[t]{\secname \ -- $(\bZ / m\bZ)^{\times}$}
+  證明這個定理需要用到中國剩餘定理：
+  \begin{theorem}[Euler $\varphi$ 函數]
+  假設 $m = m_1 m_2 \cdots m_k$，且 $m_1, m_2, \cdots, m_k$ 兩兩互質，令
+  \[ \psi(x) = (x \bmod m_1, x \bmod m_2, \cdots, x \bmod m_k) \]
+  則 $\psi(x)$
+  \begin{enumerate}
+    \item 是一個 $\bZ / m\bZ$ 到 $\bZ / m_1 \bZ \times \bZ / m_2 \bZ \times \ldots \times \bZ / m_k \bZ$
+      的一一對應函數。
+    \item 這個函數保持了加法和乘法。
+  \end{enumerate}
+  \end{theorem}
+\end{frame}
+
+\begin{frame}
+  \begin{enumerate}[<+->]
+    \setlength{\itemsep}{3mm}
+    \item 如果 $p$ 是質數，則 $\varphi(p) = p-1$。
+    \item 如果 $p$ 是質數，則 $\varphi(p^k) = p^{k-1}(p-1)$。
+    \item 如果 $m, n$ 互質，則 $\varphi(mn) = \varphi(m) \varphi(n)$。
+  \end{enumerate}
 \end{frame}
 
 \begin{frame}[t]{\secname \ -- 子群}
@@ -638,6 +660,12 @@ pair<int, int> extend_gcd(int a, int b) {
   \pause
 
   可定義 $\log_a$，如 $\log_2(9) = 6$。
+\end{frame}
+
+\begin{frame}{{\secname} -- 原根}
+  \begin{missue}
+    如何找一個模 $m$ 下的原根？
+  \end{missue}
 \end{frame}
 
 \begin{frame}{{\secname} -- Tonelli-Shanks algorithm}
