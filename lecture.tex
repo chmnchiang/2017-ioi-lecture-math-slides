@@ -1,14 +1,16 @@
 %&<tex>
-\documentclass[notheorems]{beamer}
+\documentclass[notheorems,xcolor=dvipsnames]{beamer}
 \usetheme{Rochester}
 %\usefonttheme{serif}
 
+
 %\usepackage[hmargin=2.5cm, vmargin=2cm]{geometry}
 \usepackage{amssymb, mathtools, yhmath, graphicx}
+\usepackage[most]{tcolorbox}
 %\usepackage{fontspec, type1cm, titlesec, titling, fancyhdr, tabularx}
-%\usepackage{color, unicode-math, float, hhline}
-\usepackage{color}
+%\usepackage{unicode-math}
 \usepackage{float}
+\usepackage{transparent}
 
 %\usepackage{eulervm}
 
@@ -43,35 +45,50 @@
 %\parindent=24pt
 %\parskip=1em
 
-%\DeclarePairedDelimiter{\abs}{\lvert}{\rvert}
-%\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
-%\DeclarePairedDelimiter{\inpd}{\langle}{\rangle}
-%\DeclarePairedDelimiter{\ceil}{\lceil}{\rceil}
-%\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+\makeatletter
+%\newcommand{\myRelbar}{%
+    %{\Rightarrow}%
+    %\llap{\color{black}{\rule[-0.2ex]{1.1ex}{2ex}}}%
+    %\kern-1.5ex}
+%\let\saveLongrightarrow\Longrightarrow
+\renewcommand{\Longrightarrow}{%
+    %%\mathrel{\rlap{$\m@th\myRelbar\myRelbar$}%
+    %%\phantom{{\saveLongrightarrow}}%
+    %%\llap{$\m@th\Rightarrow$}}}
+\Relbar\joinrel\mathrel{\raisebox{0.095ex}{\scalebox{0.85}{${\Rightarrow}$}}}
+}
+\makeatother
 
-\newcommand\abs[1]{\left\lvert #1 \right\rvert}
 
 \newcommand{\img}{\mathsf{i}}
 \newcommand{\ex}{\mathsf{e}}
 \newcommand{\dD}{\mathrm{d}}
 \newcommand{\dI}{\,\mathrm{d}}
 
-%\makeatletter
-%\def\th@mystyle{%
-    %\normalfont % body font
-    %\setbeamercolor{block title example}{bg=green,fg=white}
-    %\setbeamercolor{block body example}{bg=green!20,fg=black}
-    %\def\inserttheoremblockenv{exampleblock}
-  %}
-%\makeatother
-%\theoremstyle{mystyle}
-%\newtheorem*{problem}{Problem}
+\newcommand\abs[1]{\left\lvert #1 \right\rvert}
+\newcommand{\ord}{\mathcal{O}}
+\newcommand*{\defeq}{\triangleq}
+
+\newcommand*{\bZ}{\mathbb{Z}}
 
 \theoremstyle{definition}
 \newtheorem{theorem}{定理}
 \newtheorem{lemma}{引理}
 \newtheorem{problem}{例題}
 \newtheorem{definition}{定義}
+
+\newenvironment{missue}{%
+\setbeamercolor{block title}{bg=ForestGreen,fg=white}
+\setbeamercolor{block body}{bg=blue!20!green!20,fg=black}
+\begin{block}{\centering 問題}}{\end{block}}
+
+\newenvironment{exercise}{%
+\setbeamercolor{block title}{bg=ForestGreen,fg=white}
+\setbeamercolor{block body}{bg=blue!20!green!20,fg=black}
+\begin{block}{習題}}{\end{block}}
+
+\renewenvironment{proof}{%
+\begin{tcolorbox}[frame empty] {\bf 證明：}\ }{\end{tcolorbox}}
 
 \setbeamercovered{transparent}
 %\usefonttheme[onlymath]{serif}
@@ -281,15 +298,267 @@ cout << ans << endl;
   要有舉一反三的能力！
 \end{frame}
 
-\begin{frame}[t]
+\begin{frame}[t]{\secname \ -- 數學想法例子 2}
   \begin{problem}[2016 NTU PK pF]
     給你一堆數列 $a_1, a_2, \cdots, a_n$，你要找一個排列 $\sigma$，使得
     \[ \min_{1 \leq i < n} \abs{a_{\sigma(i)} - a_{\sigma(i+1)}} \]
     最大。 ($n \leq 2 \times 10^5$)
   \end{problem}
+  \pause
+
+  \medskip
+  我們先想 $n$ 是\alert{偶數}的 case。
 \end{frame}
 
-\section{234}
+\begin{frame}[t]{\secname \ -- 數學想法例子 2}
+  \begin{enumerate}
+    \item 嘗試、觀察
+    \item 神猜結論
+  \end{enumerate}
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}[scale=0.8]
+      \useasboundingbox (-1, -3) rectangle (11, 1);
+      \draw<+->[-latex, thick] (0, 0) -- (10, 0);
+      \foreach \x [count=\i] in {0.5, 2, 4, 6, 8, 9} {
+        \fill (\x, 0) node (\i) {} circle (1.5mm);
+      }
+      \draw<+> (4) edge[bend left=40, -latex, very thick] (1);
+      \draw<.-> (1) edge[bend left=40, -latex, very thick] (5);
+      \draw<.> (5) edge[bend left=40, -latex, very thick] (2);
+      \draw<.-> (2) edge[bend left=40, -latex, very thick] (6);
+      \draw<.> (6) edge[bend left=40, -latex, very thick] (3);
+      \draw<.-> (4) ++ (-0.7, 0.7) edge[-latex, very thick] (4);
+
+      \draw<+-> (4) edge[bend left=40, -latex, very thick, red] (1);
+      \draw<.-> (5) edge[bend left=40, -latex, very thick, red] (2);
+      \draw<.-> (6) edge[bend left=40, -latex, very thick, red] (3);
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}[t]{\secname \ -- 數學想法例子 2}
+  \begin{enumerate}
+    \setcounter{enumi}{2}
+    \item 證明
+  \end{enumerate}
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}[scale=0.8]
+      \useasboundingbox (-1, -3) rectangle (11, 1);
+      \draw<+->[-latex, thick] (0, 0) -- (10, 0);
+      \foreach \x [count=\i] in {0.5, 9} {
+        \fill (\x, 0) node (\i) {} circle (1.5mm);
+      }
+      \foreach \x [count=\i] in {2, 4, 6, 8} {
+        \fill[red] (\x, 0) node (\i) {} circle (1.5mm);
+      }
+
+      \draw[latex-latex] (2, -.5) -- (8, -.5);
+      \draw (2, -.8) -- (2, -.2);
+      \draw (8, -.8) -- (8, -.2);
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{\secname \ -- 數學想法例子 2}
+  \begin{exercise}
+    請完成奇數的情況。
+  \end{exercise}
+\end{frame}
+
+\section{數論}
+
+\begin{frame}[t,fragile]{\secname}
+  \begin{problem}[An Easy Problem, NTUJ 1423]
+    給你等式 $a^b \equiv c \pmod{d}$ 中的其中 $3$ 個，請找出剩下的一個。
+  \end{problem}
+  \pause
+
+  \bigskip
+  \begin{enumerate}
+    \item $a^b \equiv \raisebox{-.2mm}{\text{?}} \pmod{d}$: 快速冪，$\ord(\log b)$。
+  \end{enumerate} \vspace{-1em} \pause
+  \begin{minted}{cpp}
+int fastpow(int a, int b, int m) {
+    if (!b) return 1%m;
+    int ret = fastpow(a*a%m, b/2, m);
+    if (b&1) (ret *= a) %= m;
+    return ret;
+}
+  \end{minted}
+\end{frame}
+
+\begin{frame}[t]{\secname}
+  \begin{enumerate}
+    \setcounter{enumi}{1}
+    \item $a^b \equiv c \pmod{\text{?}}$ \pause $\implies \raisebox{-.2mm}{?} \mid a^b - c$ \pause
+      \vspace{1em}
+    \item<+-> $a^{\text{?}} \equiv c \pmod{p},\, p \text{ prime}$： $\ord\big( \sqrt{p} \big)$，有點難了。
+
+      \[ a^{xk + y} \equiv c \pmod{p} \iff a^{xk} \equiv c a^{-y} \pmod{p} \]
+
+      \begin{missue}<+->
+        \centering
+        怎麼求出 $a^{-y} \bmod p$？
+      \end{missue}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{\secname}
+  我們先離題一下。
+  \pause
+
+  \medskip
+  數學上喜歡把東西抽象化，只留下「本質」，去掉多餘的東西。
+  \pause
+
+  \medskip
+  \begin{missue}<+->
+    \centering
+    運算的「本質」是什麼？
+  \end{missue}
+\end{frame}
+
+\begin{frame}{\secname \ -- 群}
+\begin{definition}[群] 一個\emph{群}由一個集合 $G$ 和一個運算 $\cdot$ 構成，滿足
+  \begin{itemize}
+    \item 運算 $\cdot$ 是一個函數 $(G, G) \to G$，也就是說 $x \cdot y \in G$。
+    \item 有\emph{結合律}：$(x \cdot y) \cdot z = x \cdot (y \cdot z)$
+    \item 存在一個特別的元素 $1$ 叫作\emph{單位元}，滿足 $1 \cdot x = x \cdot 1 = x$。
+    \item 對每一個 $x$ 存在 $x^{-1} \in G$ 叫作\emph{反元素}，滿足 $x \cdot x^{-1} = x^{-1} \cdot x = 1$。
+  \end{itemize}
+\end{definition}
+\end{frame}
+
+\begin{frame}[t]{\secname \ -- 群的例子}
+  \begin{itemize}
+    \item 整數對於加法 $(\bZ, +)$ 是一個群。
+    \item 旋轉是一個群，如 $0, \pi/2, \pi, 3\pi/2$。
+    \item 模 $m$ 下的加法，寫作 $\bZ / m\bZ$。
+    \item 一個元素生成的群 $\langle a \rangle \defeq \{ a^k \mid k \in \bZ \}$，我們把這種群叫作%
+      \emph{循環群}。
+  \end{itemize}
+
+  \begin{missue}
+    \centering
+    模 $m$ 下的乘法 $(\bZ / m\bZ)^{\times}$ 是一個群嗎？
+  \end{missue}
+\end{frame}
+
+\begin{frame}[t]{\secname \ -- $(\bZ / m\bZ)^{\times}$}
+  剛剛那樣問並不精確，關鍵應是模 $m$ 下哪些元素有反元素？\pause
+
+  \medskip
+  $2$ 在模 $12$ 下就沒有反元素。 \pause
+
+  \[ xy \equiv 1 \pmod{m} \pause\implies xy = mt' + 1 \pause\implies xy + mt = 1 \]
+
+  \begin{missue}<+->
+    \centering
+    給定 $a, b, c$，$ax + by = c$ 什麼時候有整數解 $(x, y)$？
+  \end{missue}
+\end{frame}
+
+\begin{frame}[t, fragile]{\secname \ -- $ax + by = c$}
+  \begin{theorem} \vspace{-1em}
+    \[a \bZ + b \bZ = \gcd(a, b) \bZ \]
+  \end{theorem}\pause
+
+  $a \bZ + b \bZ \supseteq \gcd(a, b) \bZ $：
+  \begin{minted}{cpp}
+pair<int, int> extend_gcd(int a, int b) {
+    if(b == 0) return {1, 0};
+    else {
+        int k = a/b;
+        pair<int, int> xy = gcd(b, a%b);
+        return {xy.second, xy.first - k * xy.second};
+    }
+}
+  \end{minted}
+\end{frame}
+
+\begin{frame}[t]{\secname \ -- $(\bZ / m\bZ)^{\times}$}
+  \begin{lemma} \vspace{-1em}
+    \[ x \in (\bZ / m\bZ)^{\times} \iff \gcd(x, m) = 1 \]
+  \end{lemma}
+  \pause
+
+  \begin{proof}
+    \begin{align*}
+      \only<2->{xy \equiv 1 \ (\mathrm{mod}\ m) \text{ 有解} & \iff xy + mt = 1 \text{ 有解} \\}
+      \only<3->{& \iff \gcd(x, m) = 1}
+    \end{align*}
+  \end{proof}
+\end{frame}
+
+\begin{frame}[t]{\secname \ -- $(\bZ / m\bZ)^{\times}$}
+  \begin{missue}
+    $(\bZ / m\bZ)^{\times}$ 有多少元素？也就是 $[1, n]$ 中有幾個數和 $n$ 互質？
+  \end{missue}
+  \pause
+
+  \begin{theorem}[Euler $\varphi$ 函數]
+    $\varphi(n)$ 表示 $[1, n]$ 有幾個數和 $n$ 互質，則如果 $n = p_1^{\alpha_1} p_2^{\alpha_2} \cdots p_k^{\alpha_k}$，則
+    \[ \varphi(n)
+      = n \left( 1 - \frac1{p_1} \right) \left( 1 - \frac1{p_2} \right) \cdots \left( 1 - \frac1{p_k} \right)\]
+  \end{theorem}
+
+\end{frame}
+
+\begin{frame}[t]{\secname \ -- 子群}
+  \begin{definition}
+    如果 $H \subseteq G$ 且 $H$ 中任兩個元素的乘積、任一個元素的反元素還在 $H$ 裡，我們就說 $H$ 是 $G$ 的\emph{子群}。
+  \end{definition}
+
+  \begin{itemize}
+    \item 所有偶數 $2 \bZ$ 對於加法是 $\bZ$ 的子群。
+    \item $H \defeq \{\bar{1}, \bar2, \bar4\}$ 對於乘法是 $\bZ / 7\bZ$ 的子群。
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[t]{\secname \ -- Lagrange's Theorem}
+  \begin{theorem}[Lagrange's theorem]
+    如果 $H$ 是 $G$ 的子群，則 $\abs{G} = \abs{G / H} \abs{H}$，因此有 $\abs{H} \bigm\vert \abs{G}$。
+  \end{theorem}
+  \pause
+
+  \bigskip
+  \begin{theorem}[Euler's theorem] \vspace{-1em}
+    \[ a^{\varphi(m)} \equiv 1 \pmod{m} \]
+  \end{theorem}
+\end{frame}
+
+\begin{frame}[t]{\secname \ -- Euler's Theorem}
+  \begin{proof} \\
+    如果 $n$ 是最小的正整數使得 $a^n \equiv 1 \pmod{m}$，那
+    $H \defeq \langle a \rangle = \{1, a, a^2, \cdots, a^{n-1}\}$ 有 $n$ 個元素。
+
+    \smallskip
+    由 Lagrange's theorem，$n \bigm\vert \abs{(\bZ / m\bZ)^{\times}} = \varphi(m)$，可令 $\varphi(m) = nk$，
+    因此 $a^{\varphi(m)} = a^{nk} \equiv 1 \pmod{m}$。
+  \end{proof}
+
+  \begin{lemma}<+->
+    \vspace{-1em}
+    \[ \gcd(a, m) = 1 \implies a^{-1} \equiv a^{\varphi(m)-1} \pmod{m} \]
+  \end{lemma}
+\end{frame}
+
+\begin{frame}[t]{\secname}
+  回到一開始的題目：
+  \begin{enumerate}
+    \setcounter{enumi}{3}
+    \item $\raisebox{-.2mm}{\text{?}}^{b} \equiv c \pmod{p},\, p \text{ prime}$。
+  \end{enumerate}
+
+  \SampleProblem[2013 大專院校程式競賽 pJ]{Square Roots in a Finite Group}{
+    給定一個質數 $p$ 和 $a$，請求出 $x^2 \equiv a \pmod{p}$ 的解 $x$ 或輸出無解。
+    ($a, p < 2^{31}$)
+  }
+\end{frame}
 
 \end{document}
 
