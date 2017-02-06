@@ -12,11 +12,15 @@
 \usepackage{float}
 \usepackage{transparent}
 \usepackage[normalem]{ulem}
+\usepackage{bm}
 
 %\usepackage{eulervm}
 
 \usepackage{xpatch}
 \usepackage{relsize}
+\usepackage{scalerel}
+\usepackage{stackengine}
+\usepackage{gauss}
 %\usepackage[abbreviations, per-mode=symbol]{siunitx}
 \usepackage[CheckSingle, CJKmath]{xeCJK}
 \usefonttheme{professionalfonts}
@@ -34,11 +38,11 @@
 \setCJKmainfont{Source Han Sans TW}
 \newfontfamily\SHSTW{Source Han Sans TW}
 
-\def\normalsize{\fontsize{12}{18}\selectfont}
-\def\large{\fontsize{14}{21}\selectfont}
-\def\Large{\fontsize{16}{24}\selectfont}
-\def\LARGE{\fontsize{18}{27}\selectfont}
-\def\huge{\fontsize{20}{30}\selectfont}
+%\def\normalsize{\fontsize{12}{18}\selectfont}
+%\def\large{\fontsize{14}{21}\selectfont}
+%\def\Large{\fontsize{16}{24}\selectfont}
+%\def\LARGE{\fontsize{18}{27}\selectfont}
+%\def\huge{\fontsize{20}{30}\selectfont}
 
 %\titleformat{\section}{\bf\Large}{\arabic{section}}{24pt}{}
 %\titleformat{\subsection}{\large}{\arabic{subsection}.}{12pt}{}
@@ -49,11 +53,16 @@
 %\parskip=1em
 
 \makeatletter
-%\newcommand{\myRelbar}{%
-    %{\Rightarrow}%
-    %\llap{\color{black}{\rule[-0.2ex]{1.1ex}{2ex}}}%
-    %\kern-1.5ex}
-%\let\saveLongrightarrow\Longrightarrow
+\newcommand{\myRelbar}{%
+    {\Rightarrow}%
+    \llap{\color{white}{\rule[-0.2ex]{1.1ex}{2ex}}}%
+    \kern-1.5ex}
+\let\saveLongrightarrow\Longrightarrow
+\newcommand{\Larr}{%
+    \mathrel{\rlap{$\m@th\myRelbar\myRelbar$}%
+    \phantom{{\saveLongrightarrow}}%
+    \llap{$\m@th\Rightarrow$}}}
+
 \renewcommand{\Longrightarrow}{%
     %%\mathrel{\rlap{$\m@th\myRelbar\myRelbar$}%
     %%\phantom{{\saveLongrightarrow}}%
@@ -73,6 +82,10 @@
 \newcommand*{\defeq}{\triangleq}
 \renewcommand*{\sharp}{\mathlarger{\#}}
 \newcommand*{\bZ}{\mathbb{Z}}
+\newcommand*{\bF}{\mathbb{F}}
+\newcommand*{\correspond}{\mathrel{\stackon[1.5pt]{=}{\stretchto{%
+    \scalerel*[\widthof{=}]{\wedge}{\rule{1ex}{3ex}}}{0.5ex}}}}
+\newcommand*{\Expect}{{\rm I\kern-.3em E}}
 
 \theoremstyle{definition}
 \newtheorem{theorem}{定理}
@@ -868,6 +881,36 @@ while (t != 1) {
 
 \end{frame}
 
+\section{\texttt{C++17}}
+
+\begin{frame}{{\secname}}
+  \centering
+  \Large
+  \texttt{C++17} Features 分享！
+\end{frame}
+
+\begin{frame}[fragile]{{\secname}}
+  \begin{itemize}[<+->]
+    \setlength{\itemsep}{3mm}
+    \item Class template deduction
+      \begin{minted}[linenos=false]{cpp}
+pair pr("hao"s, 123);
+      \end{minted}
+    \item Structure bindings
+      \begin{minted}[linenos=false]{cpp}
+auto [a, b] = pair("hao"s, 123);
+      \end{minted}
+    \item Initializers in \texttt{if}
+      \begin{minted}[linenos=false]{cpp}
+if (int x = fun(); x > 3) { ... }
+      \end{minted}
+    \item \texttt{std::clamp}
+      \begin{minted}[linenos=false]{cpp}
+assert(clamp(a, low, high) == min(max(a, low), high));
+      \end{minted}
+  \end{itemize}
+\end{frame}
+
 \section{線性代數}
 
 \begin{frame}{\sout{組合賽局}~{\secname}}
@@ -966,11 +1009,11 @@ while (t != 1) {
 
 \begin{frame}{{\secname} -- 例題}
   現在對於 $X$ 的第 $i$ 個點，如果他連到下面 $i_1, i_2, \cdots, i_k$ 個點，就令
-  $v_i = \sum 2^{i_t}$。\pause
+  $\bm{v}_i = \sum 2^{i_t}$。\pause
 
   \medskip
-  從剛才的討論可以知道如果存在 $v_{j_1}, v_{j_2}, \cdots, v_{j_m}$ 使得
-  \[ s \in \{j_t\} \quad\text{且}\quad  v_{i_1} \oplus v_{i_2} \oplus \ldots \oplus v_{i_m} \]
+  從剛才的討論可以知道如果存在 $\bm{v}_{j_1}, \bm{v}_{j_2}, \cdots, \bm{v}_{j_m}$ 使得
+  \[ \bm{v}_s \in \{j_t\} \quad\text{且}\quad  \bm{v}_{i_1} \oplus \bm{v}_{i_2} \oplus \ldots \oplus \bm{v}_{i_m} \]
   則後手會贏。\pause
 
   \begin{missue}
@@ -979,6 +1022,476 @@ while (t != 1) {
       \item 這個條件是否也是\emph{必要條件}？
     \end{enumerate}
   \end{missue}
+\end{frame}
+
+\begin{frame}{{\secname} -- 例題}
+  這些 $\bm{v}_i$ 其實可以看作是 $\bF_2^n$ 向量空間中的向量，其中 $n \defeq \abs{Y}$。
+  即 $1 \correspond (1, 0, 0, \cdots, 0),\ 2 \correspond (0, 1, 0, \cdots, 0)$ 等等。\pause
+
+  \bigskip
+  而條件也可以改寫成找到 $\{j_t\},\, \bm{v}_s \neq j_t$ 使得 \vspace{-1em}
+  \[ \bm{v}_s = \bm{v}_{j_1} + \bm{v}_{j_2} + \ldots + \bm{v}_{j_m} \]
+  \pause
+
+  在\emph{向量空間}中我們會問更一般的問題：解 \vspace{-1em}
+  \[ u = a_1 \bm{v}_1 + a_2 \bm{v}_2 + \ldots + a_m \bm{v}_m \]
+\end{frame}
+
+\begin{frame}{{\secname} -- 例題}
+  其實就是 \vspace{-1em}
+  \[ \bm{u} =
+    \begin{bmatrix}
+      & & & \\
+      \bm{v}_1 & \bm{v}_2 & \cdots & \bm{v}_m \\
+      & & & \\
+    \end{bmatrix} \bm{a}
+  \]
+  \pause
+
+  \medskip
+  因此追根到底就是要
+  \begin{missue}
+    \centering
+    解 $\bm{b} = A \bm{x}$。
+  \end{missue}
+  \pause
+
+  這有一個大家都知道的高斯消去法。
+\end{frame}
+
+\begin{frame}[fragile]{{\secname} -- 高斯消去法}
+  \begin{columns}[t]
+    \column{.5\textwidth}
+      \begin{minted}[fontsize=\fontsize{8}{12}, linenos=false]{cpp}
+void Gauss(int n, int **A) {
+  for (int i=0; i<n; i++) {
+    for (int j=i; j<n; j++) {
+      if (abs(A[j][i]) > EPS) {
+        swap(A[j], A[i]);
+        break;
+      }
+      if (j == n-1) goto loop_end;
+    }
+      \end{minted}
+      \vspace{2cm}
+    \column{.5\textwidth}
+      \vspace{2cm}
+      \begin{minted}[fontsize=\fontsize{8}{12}, linenos=false]{cpp}
+    for (int j=0; j<n; j++) {
+      if (j == i) continue;
+      double r = A[j][i] / A[i][i];
+      for (int k=i; k<n; k++) {
+        A[j][k] -= A[i][k] * r;
+      }
+    }
+loop_end: ;
+  }
+}
+      \end{minted}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[t]{{\secname} -- 高斯消去法}
+  高斯消去法有很多應用：
+  \begin{enumerate}
+    \item<1> 解 $A \bm{x} = \bm{b}$。
+    \item<2> 計算矩陣 $A$ 的\emph{維度}。
+    \item<3-5> 計算 $A^{-1}$。
+    \item<6> 計算 $\det A$。
+  \end{enumerate}\pause
+
+  \only<4-5>{
+    \vspace{-1em}
+    \[
+      \begin{gmatrix}[b]
+        1 & 2 \\
+        1 & 1
+        \rowops
+        \add[-1]{0}{1}
+      \end{gmatrix}
+      \Rightarrow
+      \begin{gmatrix}[b]
+        1 & 2 \\
+        0 & -1
+        \rowops
+        \mult{1}{\times (-1)}
+      \end{gmatrix}
+      \Rightarrow
+      \begin{gmatrix}[b]
+        1 & 2 \\
+        0 & 1
+        \rowops
+        \add[-2]{1}{0}
+      \end{gmatrix}
+      \Rightarrow
+      \begin{gmatrix}[b]
+        1 & 0 \\
+        0 & 1
+      \end{gmatrix}
+    \]
+  }
+  \only<5>{
+    \[
+      \begin{gmatrix}[b]
+        1 & 0 \\
+        0 & 1
+        \rowops
+      \end{gmatrix}
+      \Rightarrow
+      \begin{gmatrix}[b]
+        1 & 0 \\
+        -1 & 1
+        \rowops
+      \end{gmatrix}
+      \Rightarrow
+      \begin{gmatrix}[b]
+        1 & 0 \\
+        1 & -1
+        \rowops
+      \end{gmatrix}
+      \Rightarrow
+      \begin{gmatrix}[b]
+        -1 & 2 \\
+        1 & -1
+      \end{gmatrix}
+    \]
+  }
+\end{frame}
+
+\begin{frame}{{\secname}}
+  我們只剩下最後一個問題：為何剛剛那個條件是必要條件。\pause
+
+  \medskip
+\begin{definition}
+  對於向量 $\bm{v}_1, \bm{v}_2, \cdots, \bm{v}_n$，
+  \begin{enumerate}
+    \item 如果 $a_1 \bm{v}_1 + a_2 \bm{v}_2 + \ldots + a_n \bm{v}_n = 0 \implies a_i = 0,\, \forall i$，也就
+      是沒有一個向量可以用其他的向量「湊出來」，我們就說這些向量\emph{線性獨立}。
+    \item 如果所有 $V$ 裡的其他向量 $\bm{v}$ 都可以寫成 $\bm{v} = a_1 \bm{v}_1 + a_2 \bm{v}_2 + \ldots + a_n \bm{v}_n$，
+      我們就說這些向量是 $V$ 的一個\emph{生成集}。
+    \item 如果這些向量同時是線性獨立並且生成 $V$，我們就說這些向量是 $V$ 的一個\emph{基底}。
+  \end{enumerate}
+\end{definition}
+\end{frame}
+
+\begin{frame}[t]{{\secname}}
+\begin{theorem}
+一個向量空間中，任何基底的大小是固定的。因此這個向量空間的\emph{維度}就定義成任一個基底的大小。
+\end{theorem}\pause
+
+\bigskip
+假設\vspace{-.5em}
+\[ \bm{v}_s = a_1 \bm{v}_1 + a_2 \bm{v}_2 + \ldots + a_m \bm{v}_m \]
+無解，就表示\\
+$\begin{bmatrix}
+  & & & & \\
+  \bm{v}_1 & \bm{v}_2 & \cdots & \bm{v}_m & \bm{v}_s \\
+  & & & & \\
+\end{bmatrix}$ 的維度比
+$\begin{bmatrix}
+  & & & \\
+  \bm{v}_1 & \bm{v}_2 & \cdots & \bm{v}_m \\
+  & & & \\
+\end{bmatrix}$ 多 $1$。
+
+\end{frame}
+
+
+\begin{frame}{{\secname}}
+  現在把圖上增加一個新點當起點，並且只連到本來的起點，然後先後手互換。
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}[every node/.style={circle, draw}]
+      \node[minimum width=3mm] (1) at (0, 0) {};
+      \node[minimum width=3mm] (2) at (1, 0) {};
+      \node[minimum width=3mm] (3) at (2, 0) {};
+      \node[minimum width=3mm] (4) at (-.5, 1.2) {};
+      \node[minimum width=3mm] (5) at (.5, 1.2) {};
+      \node[minimum width=3mm] (6) at (1.5, 1.2) {};
+      \node[minimum width=3mm, fill=green] (7) at (2.5, 1.2) {};
+      \node[minimum width=3mm, fill=red] (8) at (3, 0) {};
+
+      \draw[thick] (1) edge (4);
+      \draw[thick] (1) edge (7);
+      \draw[thick] (2) edge (5);
+      \draw[thick] (2) edge (7);
+      \draw[thick] (3) edge (4);
+      \draw[thick] (3) edge (5);
+      \draw[thick] (3) edge (6);
+      \draw[thick] (3) edge (7);
+      \draw[thick] (8) edge (7);
+    \end{tikzpicture}
+  \end{figure}\pause
+
+  \bigskip
+  會對應到矩陣
+$\begin{bmatrix}
+  \mid & \mid & & \mid & \mid \\
+  \bm{v}_1 & \bm{v}_2 & \cdots & \bm{v}_m & \bm{v}_s \\
+  \mid & \mid & & \mid & \mid \\
+  0 & 0 & \cdots & 0 & 1 \\
+\end{bmatrix}^{\mathsf{T}}$
+\end{frame}
+
+\begin{frame}[t]{{\secname}}
+  \begin{theorem}
+    用 $\text{rank}(A)$ 表示矩陣 $A$ 的維度，則 $\text{rank}(A) = \text{rank}(A^{\sf T})$。
+  \end{theorem}
+
+  \pause
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \node (1) at (0, -.3) {$\begin{bmatrix}
+        & & & \\
+        \bm{v}_1 & \bm{v}_2 & \cdots & \bm{v}_m \\
+        & & & \\
+      \end{bmatrix}$};
+
+      \node (2) at (5, -.3) {$\begin{bmatrix}
+        & & & &\\
+        \bm{v}_1 & \bm{v}_2 & \cdots & \bm{v}_m & \bm{v}_s \\
+        & & & &\\
+      \end{bmatrix}$};
+
+      \node (3) at (0, -3) {$\begin{bmatrix}
+        \mid & \mid & & \mid \\
+        \bm{v}_1 & \bm{v}_2 & \cdots & \bm{v}_m \\
+        \mid & \mid & & \mid \\
+        0 & 0 & \cdots & 0 \\
+      \end{bmatrix}$} ;
+
+      \node (4) at (5, -3) {$\begin{bmatrix}
+        \mid & \mid & & \mid & \mid \\
+        \bm{v}_1 & \bm{v}_2 & \cdots & \bm{v}_m & \bm{v}_s \\
+        \mid & \mid & & \mid & \mid \\
+        0 & 0 & \cdots & 0 & 1 \\
+      \end{bmatrix}$};
+
+      \draw (1) edge[-latex, very thick] node[below]{$+1$} (2);
+      \draw (3) edge[-latex, very thick] node[above]{$+1$} (4);
+      \draw (1) edge[double, double distance=0.5mm, very thick] (3);
+      \draw (2) edge[double, double distance=0.5mm, very thick] (4);
+
+      \draw (0, 1.0) node[below]{$\text{rank} = x$};
+      \draw (5, 1.0) node[below]{$\text{rank} = x+1$};
+      \draw (0, -4) node[below]{$\text{rank} = x$};
+      \draw (5, -4) node[below]{$\text{rank} = x+1$};
+
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{{\secname}}
+  加了 $(0, 0, \cdots, 0, 1)$ 以後 $\text{rank}$ 不變，表示 $(0, 0, \cdots, 0, 1)$ 可被
+  其他列向量線性組合出 \pause $\implies$ 原本的先手贏。
+\end{frame}
+
+\section{Others}
+
+\begin{frame}{{\secname}}
+  \begin{problem}[均衡忍者出任務, 2015 ioi-camp]
+    請把 $K_n$ 分解成互斥的三角形，其中 $n = 2^k - 1$。
+  \end{problem}
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \foreach \d [count=\xi] in {90, 141.42, ..., 398.57} {
+        \fill (\d:1.5cm) node(\xi){} circle (1mm);
+      }
+
+      \draw[thick, red] (1) -- (2) -- (3) -- (1);
+      \draw[thick, orange] (1) -- (4) -- (5) -- (1);
+      \draw[thick, yellow!80!orange] (1) -- (6) -- (7) -- (1);
+      \draw[thick, green] (2) -- (4) -- (7) -- (2);
+      \draw[thick, blue] (2) -- (5) -- (6) -- (2);
+      \draw[thick, blue!50!purple] (3) -- (4) -- (6) -- (3);
+      \draw[thick, purple] (3) -- (5) -- (7) -- (3);
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+\begin{frame}{{\secname}}
+  如果可以找到函數 $f(x, y)$ 使得 $x \neq y \implies f(x, y) \neq x, y$ 且 $f(x, f(x, y)) = y,\ f(f(x, y), y) = x$，
+  我們就做完了！
+\end{frame}
+
+\begin{frame}{{\secname} -- Pr\"{u}fer sequence}
+  \begin{problem}
+    求 $n$ 個有編號的點可以形成多少種不同的樹。
+  \end{problem} \pause
+
+  \bigskip
+  答案是 $n^{n-2}$。
+\end{frame}
+
+\begin{frame}{{\secname} -- Pr\"{u}fer sequence}
+  每次找葉子中編號最小的點 $u$，假設他連出去的邊是 $(u, v)$，
+  就記下 $v$ 的編號，並把 $v$ 和邊 $(u, v)$ 從圖上刪除。重複直到圖上就只剩一個點了。
+  \pause
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}[every node/.style={draw, circle}, scale=0.8]
+      \useasboundingbox (-2, -2) rectangle (3, 3);
+      %\node (1) at (-.8, -1.3) {$1$};
+      \node<2> (3) at (2.6, .1) {$3$};
+      \node<2-3> (5) at (-1.4, .5) {$5$};
+      \node<2-4> (4) at (0, 0) {$4$};
+      \node<2-5> (2) at (1.4, 1.3) {$2$};
+      \node (6) at (2.6, 2.4) {$6$};
+
+      \node<2>[fill=black!20] (1) at (-.8, -1.3) {$1$};
+      \node<3>[fill=black!20] (3) at (2.6, .1) {$3$};
+      \node<4>[fill=black!20] (5) at (-1.4, .5) {$5$};
+      \node<5>[fill=black!20] (4) at (0, 0) {$4$};
+      \node<6>[fill=black!20] (2) at (1.4, 1.3) {$2$};
+
+      \draw<2> (1) edge[thick] (4);
+      \draw<2-3> (3) edge[thick] (2);
+      \draw<2-4> (4) edge[thick] (5);
+      \draw<2-5> (2) edge[thick] (4);
+      \draw<2-6> (2) edge[thick] (6);
+    \end{tikzpicture}
+  \end{figure}
+
+  \[ \visible<2->{4}\visible<3->{\to 2} \visible<4->{\to 4} \visible<5->{\to 2} \visible<6->{\to 6} \]
+\end{frame}
+
+\begin{frame}{{\secname} -- 構造}
+  \begin{problem}[均衡忍者出任務, 2015 ioi-camp]
+    請把 $K_n$ 分解成互斥的三角形，其中 $n = 2^k - 1$。
+  \end{problem}
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \foreach \d [count=\xi] in {90, 141.42, ..., 398.57} {
+        \fill (\d:1.5cm) node(\xi){} circle (1mm);
+      }
+
+      \draw[thick, red] (1) -- (2) -- (3) -- (1);
+      \draw[thick, orange] (1) -- (4) -- (5) -- (1);
+      \draw[thick, yellow!80!orange] (1) -- (6) -- (7) -- (1);
+      \draw[thick, green] (2) -- (4) -- (7) -- (2);
+      \draw[thick, blue] (2) -- (5) -- (6) -- (2);
+      \draw[thick, blue!50!purple] (3) -- (4) -- (6) -- (3);
+      \draw[thick, purple] (3) -- (5) -- (7) -- (3);
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+\begin{frame}{{\secname} -- 構造}
+  如果可以找到函數 $f(x, y)$ 使得 $x \neq y \implies f(x, y) \neq x, y$ 且 $f(x, f(x, y)) = y,\ f(f(x, y), y) = x$，
+  我們就做完了！\pause
+
+  \bigskip
+  事實上，只要 $n \equiv 1, 3 \pmod{6}$ 就會有解！
+\end{frame}
+
+\begin{frame}{{\secname} -- 構造}
+  \begin{problem}[Graph Factorization, ASC 35 pF]
+    請把 $K_{2n}$ 分解成 $2n-1$ 個互斥的完美匹配。
+  \end{problem}
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \foreach \d [count=\xi] in {90, 150, ..., 390} {
+        \fill (\d:1.5cm) node(\xi){} circle (1mm);
+      }
+      \draw[thick, red] (1) -- (6);
+      \draw[thick, red] (2) -- (5);
+      \draw[thick, red] (3) -- (4);
+      \draw[thick, orange] (1) -- (5);
+      \draw[thick, orange] (6) -- (4);
+      \draw[thick, orange] (2) -- (3);
+      \draw[thick, green] (1) -- (4);
+      \draw[thick, green] (5) -- (3);
+      \draw[thick, green] (6) -- (2);
+      \draw[thick, blue] (1) -- (3);
+      \draw[thick, blue] (4) -- (2);
+      \draw[thick, blue] (5) -- (6);
+      \draw[thick, purple] (1) -- (2);
+      \draw[thick, purple] (3) -- (6);
+      \draw[thick, purple] (4) -- (5);
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{{\secname} -- 機率}
+  \begin{problem}[Graph Game, Codeforces 235D]
+    現在有一個遊戲：一開始的分數是 $0$，並且有一個 $n$ 個點的樹，
+    每次從剩下的點中隨機且等機率的選出一個點 $v$，並把分數加上 $v$ 所在的
+    連通塊的大小，且把 $v$ 和與 $v$ 相鄰的邊全部刪掉。一直進行到圖上沒有點為止，
+    問你得到的分數的期望值。
+  \end{problem}\pause
+
+  \bigskip
+  機率有關的題目通常會玩一個梗：
+  \begin{lemma} \vspace{-1em}
+    \[ \Expect[X + Y] = \Expect[X] + \Expect[Y] \]
+  \end{lemma}
+\end{frame}
+
+\begin{frame}{{\secname}}
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}[every node/.style={circle, draw, minimum width=3mm}]
+      \node(1) at (0, 0) {};
+      \node(2) at (1, 0) {};
+      \node[fill=green] (3) at (2, 0) {};
+      \node(4) at (-1, 0) {};
+      \node[fill=blue] (5) at (-2, 0) {};
+      \draw (1) edge[thick] (2);
+      \draw (3) edge[thick] (2);
+      \draw (1) edge[thick] (4);
+      \draw (5) edge[thick] (4);
+    \end{tikzpicture}
+  \end{figure} \pause
+
+  \medskip
+  不過原本的題目其實是一棵水母。
+
+  \medskip
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}[every node/.style={circle, draw, minimum width=3mm}]
+      \node(1) at (0.2, 0) {};
+      \node(2) at (1.2, 0) {};
+      \node[fill=green] (3) at (2.2, 0) {};
+      \node(4) at (-0.5, -0.5) {};
+      \node(5) at (-1.5, -0.5) {};
+      \node(6) at (-2.5, -0.5) {};
+      \node(7) at (-1, 0.5) {};
+      \node(8) at (-2, 0.5) {};
+      \node(9) at (-3.2, 0) {};
+      \node[fill=blue] (10) at (-4.2, 0) {};
+      \draw (1) edge[thick] (2);
+      \draw (3) edge[thick] (2);
+      \draw (1) edge[thick] (4);
+      \draw (5) edge[thick] (4);
+      \draw (5) edge[thick] (6);
+      \draw (9) edge[thick] (6);
+      \draw (9) edge[thick] (10);
+      \draw (1) edge[thick] (7);
+      \draw (8) edge[thick] (7);
+      \draw (8) edge[thick] (9);
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+
+\begin{frame}{{\secname}}
+  \begin{problem}
+    給你許多點 $(x_1, y_1), (x_2, y_2), \cdots, (x_n, y_n)$，請找一個線性函數 $f$ 使得
+    $\sum (f(x_i) - y_i)^2$ 最小。
+  \end{problem}\pause
+
+  \bigskip
+  \begin{problem}
+    給你許多點 $\bm{x}_1, \bm{x}_2, \cdots, \bm{x}_n$，請找一條線 $l$ 使得
+    $\sum d(\bm{x}_i, l)^2$ 最小。
+  \end{problem}
 \end{frame}
 
 \end{document}
