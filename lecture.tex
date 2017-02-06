@@ -450,7 +450,7 @@ int fastpow(int a, int b, int m) {
 \end{frame}
 
 \begin{frame}[t]{\secname \ -- 群的例子}
-  \begin{itemize}
+  \begin{itemize}[<+->]
     \item 整數對於加法 $(\bZ, +)$ 是一個群。
     \item 旋轉是一個群，如 $0, \pi/2, \pi, 3\pi/2$。
     \item 模 $m$ 下的加法，寫作 $\bZ / m\bZ$。
@@ -458,10 +458,12 @@ int fastpow(int a, int b, int m) {
       \emph{循環群}。
   \end{itemize}
 
+  \visible<+->{
   \begin{missue}
     \centering
     模 $m$ 下的乘法 $(\bZ / m\bZ)^{\times}$ 是一個群嗎？
   \end{missue}
+  }
 \end{frame}
 
 \begin{frame}[t]{\secname \ -- $(\bZ / m\bZ)^{\times}$}
