@@ -531,7 +531,7 @@ pair<int, int> extend_gcd(int a, int b) {
   \end{theorem}
 \end{frame}
 
-\begin{frame}[t]{\secname \ -- Euler's Theorem}
+\begin{frame}[t]{{\secname} -- Euler's Theorem}
   \begin{proof} \\
     如果 $n$ 是最小的正整數使得 $a^n \equiv 1 \pmod{m}$，那
     $H \defeq \langle a \rangle = \{1, a, a^2, \cdots, a^{n-1}\}$ 有 $n$ 個元素。
@@ -547,18 +547,130 @@ pair<int, int> extend_gcd(int a, int b) {
   \end{lemma}
 \end{frame}
 
-\begin{frame}[t]{\secname}
+\begin{frame}{{\secname} -- Tonelli-Shanks algorithm}
   回到一開始的題目：
   \begin{enumerate}
     \setcounter{enumi}{3}
     \item $\raisebox{-.2mm}{\text{?}}^{b} \equiv c \pmod{p},\, p \text{ prime}$。
   \end{enumerate}
+  \pause
 
-  \SampleProblem[2013 大專院校程式競賽 pJ]{Square Roots in a Finite Group}{
+  \bigskip
+  先看 $b = 2$ 的情況。
+  \begin{problem}[Square Roots in a Finite Group, 2013 大專院校 pJ]
     給定一個質數 $p$ 和 $a$，請求出 $x^2 \equiv a \pmod{p}$ 的解 $x$ 或輸出無解。
     ($a, p < 2^{31}$)
-  }
+  \end{problem}
 \end{frame}
+
+\begin{frame}[t]{{\secname} -- Tonelli-Shanks algorithm}
+  當時這一題有給一個小題示。
+
+  \begin{enumerate}
+    \item 把 $p-1$ 寫作 $p-1 = 2^s m$，其中 $m$ 是奇數。
+    \item 找一個 $b$ 使得 $x^2 \equiv b \pmod{p}$ 無解。
+    \item 令 $b \gets b^m,\, x \gets a^{(m+1)/2},\, t \gets a^m$，\\
+      可以驗證 $x^2 \equiv at \pmod{p}$。
+    \item 想辦法把 $t$ 調成 $1$ 你就獲勝了。
+  \end{enumerate}
+  \pause
+
+  \begin{figure}
+    \centering
+    \includegraphics[width=0.45\textwidth]{figure/what.jpg}<+->
+  \end{figure}
+\end{frame}
+
+\begin{frame}{{\secname} -- 原根}
+  要有一點先備知識。\pause
+
+  \bigskip
+  \begin{theorem}
+    \vspace{-1em}
+    \[ (\bZ / m\bZ)^{\times} \text{ 是一個循環群} \iff m = 1, 2, 4, p^k, 2p^k \]
+  \end{theorem}
+  \pause
+
+  \bigskip
+  \begin{definition}
+    如果 $(\bZ / m\bZ)^{\times} = \langle a \rangle$，我們就說 $a$ 是模 $m$ 下的\emph{原根}。
+  \end{definition}
+\end{frame}
+
+\begin{frame}{{\secname} -- 原根}
+  舉個例子，$m = 11, a = 2$。
+  \begin{table}
+    \begin{tabular}{c||c|c|c|c|c|c|c|c|c|c}
+      $\bZ / 10\bZ$
+      & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 \\
+      \hline
+      $(\bZ / 11\bZ)^{\times}$
+      & 1 & 2 & 4 & 8 & 5 & 10 & 9 & 7 & 3 & 6 \\
+    \end{tabular}
+  \end{table}
+  \pause
+
+  \[
+    \begin{array}{cccccl}
+      2 & +      & 4 & \equiv & 6 & \pmod{10} \\
+      \updownarrow & & \updownarrow & & \updownarrow & \\
+      4 & \times & 5 & \equiv & 9 & \pmod{11} \\
+    \end{array}
+  \]
+  \pause
+
+  可定義 $\log_a$，如 $\log_2(9) = 6$。
+\end{frame}
+
+\begin{frame}{{\secname} -- Tonelli-Shanks algorithm}
+  $p = 25,\ p-1 = 2^s \cdot m = 2^3 \cdot 3$ \\
+  \visible<2->{ $\log(t) = \log(a^m) = m \log(a)$。}\visible<3->{如果 $x \gets b$，那 $t \gets b^2$。}
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \useasboundingbox (-2.2cm, -2.2cm) rectangle (2.2cm, 2.2cm);
+      \fill[red] (90:2cm) node(0){} circle (1mm);
+      \foreach \deg [count=\xi] in {75, 60,..., -255} {
+        \fill (\deg:2cm) node(\xi){} circle (1mm);
+        \pgfmathtruncatemacro{\hao}{mod(\xi,3)}
+        \ifthenelse{\hao = 0}{
+          \fill<2-5>[green] (\deg:2cm) node{} circle (1.02mm);
+        }{ }
+        \pgfmathtruncatemacro{\tsan}{mod(\xi,6)}
+        \ifthenelse{\tsan = 0}{
+          \fill<3-5>[blue] (\deg:2cm) node{} circle (1.04mm);
+        }{ }
+      }
+      \foreach \xi [remember=\xi as \lastx (initially 0)] in {1,...,23}{ \draw[-latex] (\lastx) -- (\xi); }
+      \draw[-latex] (23) -- (0);
+
+      \foreach \xi [remember=\xi as \lastx (initially 6)] in {12, 18, 0} {
+        \draw<4> (\lastx) edge[bend right, -latex, thick] (\xi);
+      }
+
+      \foreach \xi [remember=\xi as \lastx (initially 9)] in {18, 3, 12} {
+        \draw<5> (\lastx) edge[bend right=45, -latex, thick] (\xi);
+      }
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}[fragile]{{\secname} -- Tonelli-Shanks algorithm}
+  \begin{minted}{cpp}
+while (t != 1) {
+    int k = 0, tp = t, tb = b;
+    while (tp != 1) tp = (tp * tp) % p, k++;
+    for (int i=0; i<s-k-1; i++) tb = (tb * tb) % p;
+    x = x * tb % p;
+    t = t * tb * tb % p;
+}
+  \end{minted}
+
+\begin{exercise}
+  把剩下的細節弄清楚！
+\end{exercise}
+\end{frame}
+
 
 \end{document}
 
