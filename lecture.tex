@@ -11,10 +11,12 @@
 %\usepackage{unicode-math}
 \usepackage{float}
 \usepackage{transparent}
+\usepackage[normalem]{ulem}
 
 %\usepackage{eulervm}
 
 \usepackage{xpatch}
+\usepackage{relsize}
 %\usepackage[abbreviations, per-mode=symbol]{siunitx}
 \usepackage[CheckSingle, CJKmath]{xeCJK}
 \usefonttheme{professionalfonts}
@@ -30,6 +32,7 @@
 %\setCJKsansfont[BoldFont=cwTex Q Hei]{cwTex Q Ming}
 %\setCJKmonofont[BoldFont=cwTex Q Hei]{cwTex Q Ming}
 \setCJKmainfont{Source Han Sans TW}
+\newfontfamily\SHSTW{Source Han Sans TW}
 
 \def\normalsize{\fontsize{12}{18}\selectfont}
 \def\large{\fontsize{14}{21}\selectfont}
@@ -68,7 +71,7 @@
 \newcommand\abs[1]{\left\lvert #1 \right\rvert}
 \newcommand{\ord}{\mathcal{O}}
 \newcommand*{\defeq}{\triangleq}
-
+\renewcommand*{\sharp}{\mathlarger{\#}}
 \newcommand*{\bZ}{\mathbb{Z}}
 
 \theoremstyle{definition}
@@ -671,6 +674,312 @@ while (t != 1) {
 \end{exercise}
 \end{frame}
 
+\section{Burnside's lemma}
+
+\begin{frame}{{\secname}}
+  \begin{problem}
+    用 $M$ 種寶石可以做出多少 $N$ 個寶石的項鍊，假設旋轉相同視為相同。
+  \end{problem}
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \fill[red] (90:1cm) node(0){} circle (1mm);
+      \fill[blue] (135:1cm) node(1){} circle (1mm);
+      \fill[red] (180:1cm) node(2){} circle (1mm);
+      \fill[red] (225:1cm) node(3){} circle (1mm);
+      \fill[blue] (270:1cm) node(4){} circle (1mm);
+      \fill[red] (-45:1cm) node(5){} circle (1mm);
+      \fill[blue] (0:1cm) node(6){} circle (1mm);
+      \fill[red] (45:1cm) node(7){} circle (1mm);
+      \foreach \xi [remember=\xi as \lastx (initially 0)] in {1,2,...,7}{
+        \draw[-] (\lastx) edge[bend right=22.5] (\xi); }
+      \draw[-] (7) edge[bend right=22.5] (0);
+
+      \node at (2, 0) {$\stackrel{\curvearrowleft}{=\joinrel=}$};
+
+      \fill[red] (4, 0) ++ (90:1cm) node(0){} circle (1mm);
+      \fill[red](4, 0) ++  (135:1cm) node(1){} circle (1mm);
+      \fill[blue] (4, 0) ++ (180:1cm) node(2){} circle (1mm);
+      \fill[red] (4, 0) ++ (225:1cm) node(3){} circle (1mm);
+      \fill[red](4, 0) ++  (270:1cm) node(4){} circle (1mm);
+      \fill[blue] (4, 0) ++ (-45:1cm) node(5){} circle (1mm);
+      \fill[red](4, 0) ++  (0:1cm) node(6){} circle (1mm);
+      \fill[blue] (4, 0) ++ (45:1cm) node(7){} circle (1mm);
+      \foreach \xi [remember=\xi as \lastx (initially 0)] in {1,2,...,7}{
+        \draw[-] (\lastx) edge[bend right=22.5] (\xi); }
+      \draw[-] (7) edge[bend right=22.5] (0);
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{{\secname} -- 問題的數學描述}
+  \begin{itemize}[<+->]
+    \item 旋轉會構成一個群 $G \defeq \langle g \rangle$。
+    \item 物品（項鍊）會構成一個集合 $X$。
+    \item 用 $G$ 把 $X$ 分門別類，寫作 $X / G$。
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{{\secname} -- 一些定義}
+\begin{definition}
+假設 $X$ 是一個集合，我們說 $G$ 透過一個運算 $\cdot$ 作用在 $X$ 上，如果以下三點成立：\pause
+\begin{enumerate}[<+->]
+  \item $g \cdot x \in X$。
+  \item $(gh) \cdot x = g \cdot (hx)$。
+  \item 如果 $1$ 是 $G$ 的單位元，則 $1 \cdot x = x$。
+\end{enumerate}
+\end{definition}
+\end{frame}
+
+\begin{frame}{{\secname} -- 再一些定義}
+\begin{definition}
+\begin{enumerate}[<+->]
+  \item $G_x \defeq \{ g \in G : g x = x \}$，也就是固定 $x$ 下，所有不會動到 $x$ 的作用。
+  \item $X^g \defeq \{ x \in X : g x = x \}$，也就是固定一個作用 $g$ 下的\emph{不動點}。
+  \item $G x \defeq \{ gx : g \in G \}$，也被稱作是 $x$ 在 $G$ 下的\emph{軌道}。
+  \item $X / G \defeq \{ Gx : x \in X \}$，也就是 $X$ 在 $G$ 下所有的軌道。
+\end{enumerate}
+\end{definition}
+\end{frame}
+
+\begin{frame}{{\secname}}
+  \begin{theorem}[Burnside's lemma] \vspace{-1em}
+  \[ \abs{X / G} = \frac{1}{\abs{G}} \sum_{g \in G} \abs{X^g} \]
+  \end{theorem}\pause
+
+  \medskip
+  也就是說把每一個旋轉下的不動點加起來，除以旋轉的數量，就是種類數！
+\end{frame}
+
+\begin{frame}{{\secname} -- 證明}
+  \begin{proof}
+  \begin{align*}
+   \frac{1}{\abs{G}} \sum_{g \in G} \abs{X^g} &= \frac{1}{\abs{G}}
+   \sharp \big\{ (x, g) \mid x \in X, g \in G, x g = g \big\} \\
+   &= \frac{1}{\abs{G}} \sum_{x \in X} \abs{G_x} \\
+   &\stackrel{(1)}{=} \frac{1}{\abs{G}} \sum_{x \in X} \frac{\abs{G}}{\abs{Gx}}\\
+   &\stackrel{(2)}{=} \sum_{Gx \in X / G} \ \sum_{x \in Gx} \frac{1}{\abs{Gx}} = \sum_{Gx \in X/G} 1\\
+   &= \abs{X / G}
+  \end{align*}
+  \end{proof}
+\end{frame}
+
+\begin{frame}{{\secname} -- 證明}
+
+  {\bf 關鍵：}
+  \begin{enumerate}
+    \item $\abs{G} = \abs{Gx} \abs{G_x}$
+      \vspace{1em}
+    \item $X = \bigsqcup_{Gx \in G/X} Gx$
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[t]{{\secname} -- 應用}
+
+  回到原本的例題，現在我們要算每個旋轉 $g$ 下的不動點 $X^g$。\pause
+
+  \medskip
+  \alert{注意：}不是只有 $\curvearrowleft$ 而已，有 $1, \curvearrowleft, \curvearrowleft^2, \cdots$。
+  \pause
+
+  \bigskip
+  \begin{missue}
+    如果今天在平面上旋轉 $\pi/2$ 和對 $x$ 軸鏡射要視為相同，要考慮哪些旋轉？
+  \end{missue}
+\end{frame}
+
+\begin{frame}{{\secname} -- 應用}
+  哪些項鍊是旋轉 $\curvearrowleft^k$ 下的不動點？有幾個觀察： \pause
+
+  \medskip
+  \begin{enumerate}
+    \item 首先注意到 $X^{\curvearrowleft^k} = X^{\curvearrowleft^{\gcd(k, N)}}$
+  \end{enumerate}
+  \pause
+
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}
+      \foreach \deg [count=\xi from 0] in {90, 114,..., 436} {
+        \pgfmathtruncatemacro{\hao}{mod(\xi,3)}
+        \ifthenelse{\hao = 0}{
+          \fill[black] (\deg:1.5cm) node(\xi){} circle (1mm);
+        }{
+          \ifthenelse{\hao = 1}{
+            \fill[blue] (\deg:1.5cm) node(\xi){} circle (1mm);
+          }{
+            \fill[red] (\deg:1.5cm) node(\xi){} circle (1mm);
+          }
+        }
+      }
+      \foreach \x [remember=\xi as \lastx (initially 0)] in {3, 6, ..., 15} {
+        \pgfmathtruncatemacro{\xi}{mod(\x, 15)}
+        \draw (\lastx) edge[bend left=40, thick, -latex] (\xi);
+      }
+      \node at (0, -2cm) {\footnotesize $k = 3$};
+    \end{tikzpicture} \hspace*{1.5cm}
+    \begin{tikzpicture}
+      \foreach \deg [count=\xi from 0] in {90, 114,..., 436} {
+        \pgfmathtruncatemacro{\hao}{mod(\xi,3)}
+        \ifthenelse{\hao = 0}{
+          \fill[black] (\deg:1.5cm) node(\xi){} circle (1mm);
+        }{
+          \ifthenelse{\hao = 1}{
+            \fill[blue] (\deg:1.5cm) node(\xi){} circle (1mm);
+          }{
+            \fill[red] (\deg:1.5cm) node(\xi){} circle (1mm);
+          }
+        }
+      }
+      \foreach \x [remember=\xi as \lastx (initially 0)] in {9, 18, ..., 45} {
+        \pgfmathtruncatemacro{\xi}{mod(\x, 15)}
+        \draw (\lastx) edge[bend left=30, thick, -latex] (\xi);
+      }
+      \node at (0, -2cm) {\footnotesize $k = 9$};
+    \end{tikzpicture}
+    \caption{$n = 15$}
+  \end{figure}
+\end{frame}
+
+\begin{frame}[t]{{\secname} -- 應用}
+  \begin{enumerate}
+    \setcounter{enumi}{1}
+    \item 如果 $d \defeq \gcd(k, N)$，則
+      \[ \abs{X^{\curvearrowleft^k}} = \abs{X^{\curvearrowleft^{\gcd(k, N)}}} = M^{d} \]
+    \item 用 Burnside's lemma 得出
+      \[ \abs{X / G} = \sum_{d \mid N} \sharp \{ k \mid \gcd(k, N) = d \} M^{d} \]
+  \end{enumerate}
+  \pause
+
+  \begin{missue}
+    對於 $d \mid N$ 的 $d$，$\sharp \{ k \mid \gcd(k, N) = d \}$ 如何求？
+  \end{missue}
+\end{frame}
+
+\begin{frame}{{\secname} -- 應用}
+  因為 $d \mid N$，
+  \[ \sharp \{ k \mid \gcd(k, N) = d \} = \sharp \{ k \mid \gcd(k, N/d) = 1 \} = \varphi(N/d) \]
+  \pause
+
+  \bigskip
+  總結答案：
+  \[\sum_{d \mid N} \varphi(N/d) M^{d} \]
+
+\end{frame}
+
+\section{線性代數}
+
+\begin{frame}{\sout{組合賽局}~{\secname}}
+  我們先看一題遊戲題。
+  \begin{problem}[Takeover Wars, ACM-ICPC World Final pL]
+    \small
+    兩個人玩一個遊戲，A 有 $a_1, a_2, \cdots, a_k$ 個數字，B 有 $b_1, b_2, \cdots, b_h$ 個數字。
+    由 A 先開始行動，每次行動可以選一個進行：
+    \begin{enumerate}
+      \item 融合：選兩個自己的數字 $x, y$，把 $x, y$ 拿掉換成 $x+y$。
+      \item 吃掉：選一個自己的數字 $x$ 和對方的數字 $y$，如果 $x > y$，可以把 $y$ 拿掉。
+      \item {\SHSTW 喵 PASS ～ヽ(`・д・´)}
+    \end{enumerate}
+    誰沒有數字了就輸了，問誰會贏？ ($k, h \leq 10^5$)
+  \end{problem} \pause
+
+  有些題目沒想出來看到結論會氣死…
+\end{frame}
+
+\begin{frame}{{\secname} -- 例題}
+  再看一題遊戲題。\pause
+
+  \begin{problem}[Game on Bipartite Graph, {\small 2015-2016 Saratov SU Contest}]
+  給一個二分圖 $G$ 和一個起點 $v$，兩人玩一個遊戲：輪流選一條和現在的點 $v$ 相鄰的邊 $(v, u)$，
+  並沿著這條邊走到 $u$。走過的邊就不能再走了，誰沒有辦法再走就輸了。問你先手贏還是後手贏。($\abs{V} \leq 100$)
+  \end{problem}
+\end{frame}
+
+\begin{frame}{{\secname} -- 例題}
+  假設二分圖的兩個點集是 $X, Y$ 每個人在他的回合一定是固定從某個點集出發。\pause
+
+  \medskip
+  想一想後手什麼時候會贏？
+
+  \medskip
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}[every node/.style={circle, draw}]
+      \node[minimum width=3mm] (1) at (0, 0) {};
+      \node[minimum width=3mm] (2) at (1, 0) {};
+      \node[minimum width=3mm] (3) at (2, 0) {};
+      \node[minimum width=3mm] (4) at (-.5, 1.2) {};
+      \node[minimum width=3mm] (5) at (.5, 1.2) {};
+      \node[minimum width=3mm] (6) at (1.5, 1.2) {};
+      \node[minimum width=3mm, fill=green] (7) at (2.5, 1.2) {};
+
+      \draw[thick] (1) edge (4);
+      \draw[thick] (1) edge (7);
+      \draw[thick] (2) edge (5);
+      \draw[thick] (2) edge (7);
+      \draw[thick] (3) edge (4);
+      \draw[thick] (3) edge (5);
+      \draw[thick] (3) edge (6);
+      \draw[thick] (3) edge (7);
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{{\secname} -- 例題}
+  假設二分圖的兩個點集是 $X, Y$ 每個人在他的回合一定是固定從某個點集出發。
+  不妨假設先手出發的是 $X$。\pause
+
+  \medskip
+  想一想後手什麼時候會贏？
+
+  \medskip
+  \begin{figure}
+    \centering
+    \begin{tikzpicture}[every node/.style={circle, draw}]
+      \node[minimum width=3mm] (1) at (0, 0) {};
+      \node[minimum width=3mm] (2) at (1, 0) {};
+      \node[minimum width=3mm] (3) at (2, 0) {};
+      \node[minimum width=3mm] (4) at (-.5, 1.2) {};
+      \node[minimum width=3mm] (5) at (.5, 1.2) {};
+      \node[minimum width=3mm] (6) at (1.5, 1.2) {};
+      \node[minimum width=3mm, fill=green] (7) at (2.5, 1.2) {};
+      \node<3>[fill=black!20, minimum width=3mm] (8) at (3.5, 1.2) {};
+      \node<3>[fill=black!20, minimum width=3mm] (9) at (-1.5, 1.2) {};
+      \node<3>[fill=black!20, minimum width=3mm] (0) at (-1, 0) {};
+
+      \draw[thick] (1) edge (4);
+      \draw[thick] (1) edge (7);
+      \draw[thick] (2) edge (5);
+      \draw[thick] (2) edge (7);
+      \draw[thick] (3) edge (4);
+      \draw[thick] (3) edge (5);
+      \draw[thick] (3) edge (6);
+      \draw[thick] (3) edge (7);
+
+      \draw<3>[thick, black!50] (1) edge (9);
+      \draw<3>[thick, black!50] (9) edge (0);
+      \draw<3>[thick, black!50] (3) edge (8);
+    \end{tikzpicture}
+  \end{figure}
+\end{frame}
+
+\begin{frame}{{\secname} -- 例題}
+  現在對於 $X$ 的第 $i$ 個點，如果他連到下面 $i_1, i_2, \cdots, i_k$ 個點，就令
+  $v_i = \sum 2^{i_t}$。\pause
+
+  \medskip
+  從剛才的討論可以知道如果存在 $v_{j_1}, v_{j_2}, \cdots, v_{j_m}$ 使得
+  \[ s \in \{j_t\} \quad\text{且}\quad  v_{i_1} \oplus v_{i_2} \oplus \ldots \oplus v_{i_m} \]
+  則後手會贏。\pause
+
+  \begin{missue}
+    \begin{enumerate}
+      \item 怎麼找 $j_1, j_2, \cdots, j_m$？
+      \item 這個條件是否也是\emph{必要條件}？
+    \end{enumerate}
+  \end{missue}
+\end{frame}
 
 \end{document}
 
